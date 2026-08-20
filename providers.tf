@@ -1,12 +1,10 @@
 terraform {
   required_version = ">= 1.5"
 
-  backend "s3" {
-    bucket       = "oficina-fiap-tfstate-401510708311"
-    key          = "infra-k8s/terraform.tfstate"
-    region       = "us-east-1"
-    use_lockfile = true
-  }
+  # Os dados do backend sao fornecidos no `terraform init`.
+  # Assim, o mesmo codigo funciona localmente e no GitHub Actions
+  # sem fixar o numero de uma conta AWS no repositorio.
+  backend "s3" {}
 
   required_providers {
     aws = {
