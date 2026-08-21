@@ -7,6 +7,13 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Criar ou atualizar os recursos na AWS"
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   terraform:
@@ -55,5 +62,9 @@ jobs:
         run: terraform plan -input=false -out=tfplan
 
       - name: Terraform Apply
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: >-
+          (github.event_name == 'push' &&
+          github.ref == 'refs/heads/main' &&
+          vars.DEPLOY_ENABLED == 'true') ||
+          (github.event_name == 'workflow_dispatch' && inputs.apply)
         run: terraform apply -auto-approve -input=false tfplan
