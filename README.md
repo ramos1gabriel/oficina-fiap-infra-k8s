@@ -48,6 +48,11 @@ automatico controlado, altere a variable para `true` antes do merge e volte
 para `false` depois da execucao. Como alternativa, use `Run workflow` na aba
 Actions e marque explicitamente a opcao `apply`.
 
+As execucoes compartilham uma fila unica chamada
+`oficina-fiap-infra-k8s-state`. Isso evita que dois planos ou applies tentem
+bloquear o mesmo state S3 simultaneamente. O Terraform aguarda por ate cinco
+minutos quando encontra um lock legitimo.
+
 ## Execucao local
 
 Depois de autenticar a AWS CLI:

@@ -15,6 +15,12 @@ on:
         default: false
         type: boolean
 
+# Todos os eventos utilizam o mesmo state remoto. Uma fila global impede que
+# Pull Requests, pushes e execucoes manuais disputem o lock ao mesmo tempo.
+concurrency:
+  group: oficina-fiap-infra-k8s-state
+  cancel-in-progress: false
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -59,7 +65,7 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -input=false -out=tfplan
+        run: terraform plan -input=false -lock-timeout=5m -out=tfplan
 
       - name: Terraform Apply
         if: >-
@@ -67,4 +73,4 @@ jobs:
           github.ref == 'refs/heads/main' &&
           vars.DEPLOY_ENABLED == 'true') ||
           (github.event_name == 'workflow_dispatch' && inputs.apply)
-        run: terraform apply -auto-approve -input=false tfplan
+        run: terraform apply -auto-approve -input=false -lock-timeout=5m tfplan
