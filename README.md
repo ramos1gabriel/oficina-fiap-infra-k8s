@@ -9,7 +9,10 @@ cluster Kubernetes leve com k3s. Ele corresponde ao repositorio de
 O workflow `.github/workflows/terraform.yml` executa:
 
 - em Pull Requests para `main`: formatacao, inicializacao, validacao e plano;
-- depois do merge na `main`: as mesmas validacoes e o `terraform apply`.
+- depois do merge na `main`: as mesmas validacoes e, somente quando
+  `DEPLOY_ENABLED=true`, o `terraform apply`;
+- por execucao manual: permite confirmar a opcao `apply` antes de alterar a
+  AWS.
 
 O estado do Terraform e armazenado em S3. Nenhuma credencial ou arquivo de
 estado deve ser versionado.
@@ -22,6 +25,7 @@ Crie as seguintes **Variables** em `Settings > Secrets and variables > Actions`:
 | --- | --- |
 | `AWS_REGION` | `us-east-1` |
 | `TF_STATE_BUCKET` | `oficina-fiap-tfstate-<id-da-conta>` |
+| `DEPLOY_ENABLED` | `false` enquanto nao estiver implantando |
 
 Crie os seguintes **Secrets**:
 
@@ -35,6 +39,14 @@ Crie os seguintes **Secrets**:
 
 As credenciais do AWS Academy expiram quando a sessao do laboratório termina e
 precisam ser atualizadas antes de um novo deploy.
+
+## Controle de custos
+
+O valor recomendado para `DEPLOY_ENABLED` e `false`. Dessa forma, Pull Requests
+e pushes na `main` geram o plano, mas nao criam recursos. Para um deploy
+automatico controlado, altere a variable para `true` antes do merge e volte
+para `false` depois da execucao. Como alternativa, use `Run workflow` na aba
+Actions e marque explicitamente a opcao `apply`.
 
 ## Execucao local
 
